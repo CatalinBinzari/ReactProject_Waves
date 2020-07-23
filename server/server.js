@@ -14,6 +14,22 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 
 const port = process.env.PORT || 3002
+//=====================================
+//              MODELS
+//=====================================
+const { User } = require('./models/user')
+
+
+
+//=====================================
+//              USERS
+//=====================================
+app.post('/api/users/register', (req, res) => {//request, response
+    res.status(200);
+
+})
+
+
 
 
 app.listen(port, () => {
