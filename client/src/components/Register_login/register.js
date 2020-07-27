@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import FormField from '../utils/Form/formfield';
 import { update, generateData, isFormValid } from '../utils/Form/formActions';
-
+import Dialog from '@material-ui/core/Dialog'
 import { connect } from 'react-redux';
-import { loginUser } from '../../actions/user_actions';
+import { registerUser } from '../../actions/user_actions';
 class Register extends Component {
     state = {
         formError: false,
-        formSuccess: '',
+        formSuccess: false,
         formdata: {
             name: {
                 element: 'input',
@@ -97,11 +97,32 @@ class Register extends Component {
     }
     submitForm = (event) => {
         event.preventDefault();
+
         let dataToSubmit = generateData(this.state.formdata, 'register');
         let formIsValid = isFormValid(this.state.formdata, 'register');
 
         if (formIsValid) {
-            console.log(dataToSubmit);
+            this.props.dispatch(registerUser(dataToSubmit))
+                .then(response => {
+                    if (response.payload.success) {
+                        this.setState({
+                            formError: false,
+                            formSuccess: true
+                        })
+                        setTimeout(() => {
+                            this.props.history.push('/register_login')
+                        }, 3000)
+                    } else {
+                        this.setState({ formError: true })
+                    }
+                }).catch(e => {
+                    this.setState({
+                        formError: true
+                    })
+                })
+
+
+
         } else {
             this.setState({
                 formError: true
@@ -173,6 +194,12 @@ class Register extends Component {
 
                     </div>
                 </div>
+                <Dialog open={this.state.formSuccess}>
+                    <div className="dialog_alert">
+                        <div> Congratulations !!</div>
+                        <div> You will be redirected in 3 seconds</div>
+                    </div>
+                </Dialog>
             </div>
         );
     }
