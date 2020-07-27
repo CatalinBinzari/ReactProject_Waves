@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from "react-redux";
 import FormField from '../utils/Form/formfield'
-import { update } from '../utils/Form/formActions';
+import { update, generateData, isFormValid } from '../utils/Form/formActions';
+import { loginUser } from '../../actions/user_actions'
+import { withRouter } from 'react-router-dom'
 class Login extends Component {
     state = {
         formError: false,
@@ -47,7 +49,28 @@ class Login extends Component {
             formdata: newFormdata
         })
     }
-    submitForm = () => {
+    submitForm = (event) => {
+        event.preventDefault();
+        let dataToSubmit = generateData(this.state.formdata, 'login');
+        let formIsValid = isFormValid(this.state.formdata, 'login');
+
+        if (formIsValid) {
+            this.props.dispatch(loginUser(dataToSubmit)).then(response => {
+                //response is the return from loginUser
+                if (response.payload.loginSuccess) {
+                    console.log(response.payload);
+                    this.props.history.push('/user/dashboard')//send user to new routes using react-router
+                } else {
+                    this.setState({
+                        formError: true
+                    })
+                }
+            });
+        } else {
+            this.setState({
+                formError: true
+            })
+        }
 
     }
     render() {
@@ -68,12 +91,15 @@ class Login extends Component {
                     {this.state.formError ?
                         <div className="error_label">
                             Please check your data
-                        </div>    
-                }
+                        </div>
+                        : null}
+                    <button onClick={(event) => this.submitForm(event)} >
+                        Log in
+                    </button>
                 </form>
             </div>
         );
     }
 }
 
-export default connect()(Login);
+export default connect()(withRouter(Login)); //all the props will be injected inside Login

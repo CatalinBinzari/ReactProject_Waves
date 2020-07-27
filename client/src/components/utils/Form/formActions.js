@@ -39,3 +39,21 @@ export const update = (element, formdata, formName) => {
     newFormdata[element.id] = newElement; //we have a nea state of formdata
     return newFormdata;
 }
+
+export const generateData = (formdata, formName) => { //formName is 'login'
+    let dataToSubmit = {}
+    for (let key in formdata) {//keys are: email|password
+
+        dataToSubmit[key] = formdata[key].value //dataToSubmit will host key and value
+    }
+    //console.log(dataToSubmit)
+    return dataToSubmit
+}
+
+export const isFormValid = (formdata, formName) => {
+    let formIsValid = true;
+    for (let key in formdata) {//keys are: email || password
+        formIsValid = formdata[key].valid && formIsValid
+    }
+    return formIsValid;
+}
